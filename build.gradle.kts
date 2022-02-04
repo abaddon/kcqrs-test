@@ -1,5 +1,5 @@
 group = "io.github.abaddon.kcqrs"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 object Meta {
     const val desc = "KCQRS Test library"
@@ -10,6 +10,8 @@ object Meta {
 }
 
 object Versions {
+    const val kcqrsCoreVersion = "0.0.1"
+    const val kustomCompareVersion = "0.0.1"
     const val slf4jVersion = "1.7.25"
     const val kotlinVersion = "1.6.0"
     const val kotlinCoroutineVersion = "1.6.0"
@@ -17,8 +19,6 @@ object Versions {
     const val junitJupiterVersion = "5.7.0"
     const val jacocoToolVersion = "0.8.7"
     const val jvmTarget = "11"
-    const val kcqrsCoreVersion = "0.0.1-SNAPSHOT"
-    const val kustomCompareVersion = "0.0.1"
 }
 
 plugins {
