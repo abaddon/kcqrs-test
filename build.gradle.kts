@@ -1,5 +1,5 @@
 group = "io.github.abaddon.kcqrs"
-version = "0.0.1"
+version = "0.0.2"
 
 object Meta {
     const val desc = "KCQRS Test library"
@@ -7,6 +7,9 @@ object Meta {
     const val githubRepo = "abaddon/kcqrs-test"
     const val release = "https://s01.oss.sonatype.org/service/local/"
     const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    const val developerName = "Stefano Longhi"
+    const val developerOrganization = ""
+    const val organizationUrl = "https://github.com/abaddon"
 }
 
 object Versions {
@@ -123,10 +126,9 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("hpehl")
-                        name.set("Harald Pehl")
-                        organization.set("Red Hat")
-                        organizationUrl.set("https://developers.redhat.com/")
+                        name.set("${Meta.developerName}")
+                        organization.set("${Meta.developerOrganization}")
+                        organizationUrl.set("${Meta.organizationUrl}")
                     }
                 }
                 scm {
