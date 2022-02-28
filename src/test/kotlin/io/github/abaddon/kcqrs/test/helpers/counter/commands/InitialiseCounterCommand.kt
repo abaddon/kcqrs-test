@@ -1,8 +1,8 @@
-package io.github.abaddon.kcqrs.test.integration.counter.commands
+package io.github.abaddon.kcqrs.test.helpers.counter.commands
 
 import io.github.abaddon.kcqrs.core.domain.messages.commands.Command
-import io.github.abaddon.kcqrs.test.integration.counter.entities.CounterAggregateId
-import io.github.abaddon.kcqrs.test.integration.counter.entities.CounterAggregateRoot
+import io.github.abaddon.kcqrs.test.helpers.counter.entities.CounterAggregateId
+import io.github.abaddon.kcqrs.test.helpers.counter.entities.CounterAggregateRoot
 
 data class InitialiseCounterCommand(
     override val aggregateID: CounterAggregateId,

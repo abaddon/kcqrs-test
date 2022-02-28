@@ -1,8 +1,8 @@
-package io.github.abaddon.kcqrs.test.integration.counter.events
+package io.github.abaddon.kcqrs.test.helpers.counter.events
 
 import io.github.abaddon.kcqrs.core.domain.messages.events.EventHeader
 import io.github.abaddon.kcqrs.core.domain.messages.events.IDomainEvent
-import io.github.abaddon.kcqrs.test.integration.counter.entities.CounterAggregateId
+import io.github.abaddon.kcqrs.test.helpers.counter.entities.CounterAggregateId
 import java.util.*
 
 data class CounterIncreasedEvent(

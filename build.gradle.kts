@@ -1,5 +1,5 @@
 group = "io.github.abaddon.kcqrs"
-version = "0.0.2"
+
 
 object Meta {
     const val desc = "KCQRS Test library"
@@ -13,7 +13,7 @@ object Meta {
 }
 
 object Versions {
-    const val kcqrsCoreVersion = "0.0.1"
+    const val kcqrsCoreVersion = "0.0.3"
     const val kustomCompareVersion = "0.0.1"
     const val slf4jVersion = "1.7.25"
     const val kotlinVersion = "1.6.0"
@@ -27,10 +27,23 @@ object Versions {
 plugins {
     kotlin("jvm") version "1.6.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("com.palantir.git-version") version "0.13.0"
     jacoco
     `maven-publish`
     signing
 }
+
+val gitVersion: groovy.lang.Closure<String> by extra
+val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDetails> by extra
+val details = versionDetails()
+
+val lastTag=details.lastTag.substring(1)
+val snapshotTag= {
+    val list=lastTag.split(".")
+    val third=(list.last().toInt() + 1).toString()
+    "${list[0]}.${list[1]}.$third-SNAPSHOT"
+}
+version = if(details.isCleanTag) lastTag else snapshotTag()
 
 publishing {
     publications {
@@ -41,8 +54,15 @@ publishing {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
+    maven {
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+
 }
 
 dependencies {
@@ -59,6 +79,7 @@ dependencies {
 
     implementation(kotlin( "test"))
     testImplementation(kotlin("test"))
+    testImplementation("org.slf4j:slf4j-simple:${Versions.slf4jVersion}")
 }
 
 jacoco {
