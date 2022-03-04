@@ -1,11 +1,11 @@
-package io.github.abaddon.kcqrs.test.integration.counter.entities
+package io.github.abaddon.kcqrs.test.helpers.counter.entities
 
 import io.github.abaddon.kcqrs.core.domain.AggregateRoot
 import io.github.abaddon.kcqrs.core.domain.messages.events.IDomainEvent
-import io.github.abaddon.kcqrs.test.integration.counter.events.CounterDecreaseEvent
-import io.github.abaddon.kcqrs.test.integration.counter.events.CounterIncreasedEvent
-import io.github.abaddon.kcqrs.test.integration.counter.events.CounterInitialisedEvent
-import io.github.abaddon.kcqrs.test.integration.counter.events.DomainErrorEvent
+import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterDecreaseEvent
+import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterIncreasedEvent
+import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterInitialisedEvent
+import io.github.abaddon.kcqrs.test.helpers.counter.events.DomainErrorEvent
 
 data class CounterAggregateRoot private constructor(
     override val id: CounterAggregateId,
@@ -14,13 +14,12 @@ data class CounterAggregateRoot private constructor(
     override val uncommittedEvents: MutableCollection<IDomainEvent>
 ) : AggregateRoot() {
 
-    constructor() : this(CounterAggregateId(), 0L, 0, ArrayList<IDomainEvent>())
-    //constructor(id: CounterAggregateId) : this(CounterAggregateId(), 0L, 0)
+    constructor(id: CounterAggregateId) : this(id, 0L, 0, ArrayList<IDomainEvent>())
 
     companion object {
 
         fun initialiseCounter(id: CounterAggregateId, initialValue: Int): CounterAggregateRoot {
-            val emptyAggregate = CounterAggregateRoot()
+            val emptyAggregate = CounterAggregateRoot(id)
             return try {
                 check(initialValue >= 0 && initialValue < Int.MAX_VALUE) { "Value $initialValue not valid, it has to be >= 0 and < ${Int.MAX_VALUE}" }
                 emptyAggregate.raiseEvent(CounterInitialisedEvent(id, initialValue)) as CounterAggregateRoot

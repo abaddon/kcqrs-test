@@ -1,4 +1,4 @@
-package io.github.abaddon.kcqrs.test.integration.counter.entities
+package io.github.abaddon.kcqrs.test.helpers.counter.entities
 
 import io.github.abaddon.kcqrs.core.IIdentity
 import java.util.*
