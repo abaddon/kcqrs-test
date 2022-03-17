@@ -56,15 +56,15 @@ abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
         //Apply the initial events
         projectionHandler.onEvents(given())
         //Apply the event to test
-        projectionHandler.onEvent(`when`())
-
-        val expectedProjection = expected()
-
-        val actualProjection = runBlocking {
-            projectionRepository.getByKey(projectionKey)
-        }
-
         try {
+            projectionHandler.onEvent(`when`())
+
+            val expectedProjection = expected()
+
+            val actualProjection = runBlocking {
+                projectionRepository.getByKey(projectionKey)
+            }
+
             compareProjection(expectedProjection, actualProjection)
 
         } catch (e: Exception) {

@@ -57,17 +57,17 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
 
     @Test
     fun checkBehaviour() {
-        val givenEvents=given()
-        eventRepository.addEventsToStorage(aggregateId,givenEvents)
+        val givenEvents = given()
+        eventRepository.addEventsToStorage(aggregateId, givenEvents)
         var handler = onCommandHandler()
 
-        runBlocking {
-            handler.handle(`when`())
-        }
-        val expected = expected()
-        val published = eventRepository.loadEventsFromStorage(aggregateId).minus(givenEvents)
-
         try {
+            runBlocking {
+                handler.handle(`when`())
+            }
+            val expected = expected()
+            val published = eventRepository.loadEventsFromStorage(aggregateId).minus(givenEvents)
+
             compareEvents(expected, published)
 
         } catch (e: Exception) {
