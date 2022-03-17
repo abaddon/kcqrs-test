@@ -5,8 +5,13 @@ name: Maven Release
 
 on:
   push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+    push:
+      branches: [ main ]
+      tags:
+        - v[0-9]+.[0-9]+.[0-9]+
+  pull_request:
+    branches: [ 'feature/**' ]
+
 
 jobs:
   release:
@@ -16,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 11
         uses: actions/setup-java@v1
@@ -26,11 +33,26 @@ jobs:
 
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+
+      - name: Print Version
+        run: ./gradlew printVersion
+
       - name: Build with Gradle
         run: ./gradlew build jacocoTestReport
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          directory: ./build/reports/jacoco
+          #          files: ./coverage1.xml,./coverage2.xml # optional
+          flags: unittests
+          #          name: codecov-umbrella # optional
+          #          fail_ci_if_error: true # optional (default = false)
+          verbose: true
+
       - name: Publish to Maven Central
-        run: ./gradlew publish closeAndReleaseStagingRepository
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}

@@ -5,7 +5,7 @@ object Meta {
     const val desc = "KCQRS Test library"
     const val license = "Apache-2.0"
     const val githubRepo = "abaddon/kcqrs-test"
-    const val release = "https://s01.oss.sonatype.org/service/local/"
+    const val release =  "https://s01.oss.sonatype.org/service/local/"
     const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
     const val developerName = "Stefano Longhi"
     const val developerOrganization = ""
@@ -45,13 +45,6 @@ val snapshotTag= {
 }
 version = if(details.isCleanTag) lastTag else snapshotTag()
 
-publishing {
-    publications {
-        create<MavenPublication>("kcqrs-test") {
-            from(components["kotlin"])
-        }
-    }
-}
 
 repositories {
     mavenCentral()
@@ -128,10 +121,10 @@ signing {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = project.group.toString()
-            artifactId = project.name
-            version = project.version.toString()
+        create<MavenPublication>("kcqrs-test") {
+//            groupId = project.group.toString()
+//            artifactId = project.name
+//            version = project.version.toString()
             from(components["kotlin"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
