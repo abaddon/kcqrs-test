@@ -122,9 +122,6 @@ signing {
 publishing {
     publications {
         create<MavenPublication>("kcqrs-test") {
-//            groupId = project.group.toString()
-//            artifactId = project.name
-//            version = project.version.toString()
             from(components["kotlin"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
