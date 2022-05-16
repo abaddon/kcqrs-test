@@ -13,7 +13,7 @@ object Meta {
 }
 
 object Versions {
-    const val kcqrsCoreVersion = "0.0.3"
+    const val kcqrsCoreVersion = "0.0.7"
     const val kustomCompareVersion = "0.0.1"
     const val slf4jVersion = "1.7.25"
     const val kotlinVersion = "1.6.0"
