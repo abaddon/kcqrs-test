@@ -48,6 +48,12 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
     abstract fun expected(): List<IDomainEvent>
 
     /**
+     * Class members to exclude from the comparison test
+     * @return list of members name to exclude
+     */
+    open fun membersToIgnore(): List<String> = listOf()
+
+    /**
      * AggregateCommandHandler that will be used during the test
      * The default AggregateCommandHandler is SimpleAggregateCommandHandler
      * @return The AggregateCommandHandler used
@@ -68,7 +74,7 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
             val expected = expected()
             val published = eventRepository.loadEventsFromStorage(aggregateId).minus(givenEvents)
 
-            compareEvents(expected, published)
+            compareEvents(expected, published, membersToIgnore())
 
         } catch (e: Exception) {
             if (expectedException == null)
@@ -88,11 +94,13 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
     }
 
     companion object {
-        fun compareEvents(expected: List<IDomainEvent>, published: List<IDomainEvent>) {
+        fun compareEvents(expected: List<IDomainEvent>, published: List<IDomainEvent>,membersToIgnore: List<String>) {
             assertEquals(expected.count(), published.count(), "Different number of expected/published events.")
             val compareLogic = CompareLogic(
                 CompareLogicConfig()
                     .addMemberToIgnore("messageId")
+                    .addMembersToIgnore(membersToIgnore)
+
             )
             val eventPairs = expected.zip(published) { e, p -> mapOf(Pair("expected", e), Pair("published", p)) }
             eventPairs.forEach { eventPair ->

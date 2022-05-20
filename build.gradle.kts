@@ -14,7 +14,7 @@ object Meta {
 
 object Versions {
     const val kcqrsCoreVersion = "0.0.7"
-    const val kustomCompareVersion = "0.0.1"
+    const val kustomCompareVersion = "0.0.2"
     const val slf4jVersion = "1.7.25"
     const val kotlinVersion = "1.6.0"
     const val kotlinCoroutineVersion = "1.6.0"
@@ -38,13 +38,14 @@ val versionDetails: groovy.lang.Closure<com.palantir.gradle.gitversion.VersionDe
 val details = versionDetails()
 
 val lastTag=details.lastTag.substring(1)
+println("lastTag $lastTag")
 val snapshotTag= {
     val list=lastTag.split(".")
     val third=(list.last().toInt() + 1).toString()
     "${list[0]}.${list[1]}.$third-SNAPSHOT"
 }
 version = if(details.isCleanTag) lastTag else snapshotTag()
-
+println("version $version")
 
 repositories {
     mavenCentral()
