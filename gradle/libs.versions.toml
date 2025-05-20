@@ -6,10 +6,11 @@
 kotlin = "2.1.20"
 kotlinxCoroutines = "1.10.2"
 
-kcqrs-core = "0.1.0"
+kcqrs-core = "0.1.1"
 
 kustomCompare = "0.0.4"
 jacksonModuleKotlin = "2.16.1"
+slf4j-api ="2.0.17"
 log4j = "2.24.3"
 nexus-publish-plugin = "2.0.0"
 git-version = "3.0.0"
@@ -26,7 +27,7 @@ kcqrs-core = { module = "io.github.abaddon.kcqrs:kcqrs-core", version.ref = "kcq
 kustomCompare = { module = "io.github.abaddon:kustomCompare", version.ref = "kustomCompare" }
 jackson-module-Kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonModuleKotlin" }
 
-
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
@@ -35,20 +36,22 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 
 # Libraries can be bundled together for easier import
 [bundles]
+
+log = ["slf4j-api"]
+log-test =  [
+    "log4j-api",
+    "log4j-core",
+    "log4j-slf4j-impl"
+]
+
 ksqrs-test = [
     "kotlin-coroutines",
     "kotlin-reflect",
     "kcqrs-core",
     "kustomCompare",
-    "log4j-api",
     "junit-jupiter",
     "kotlin-coroutinesTest",
     "jackson-module-Kotlin"
-]
-
-ksqrs-test-test = [
-    "log4j-core",
-    "log4j-slf4j-impl"
 ]
 
 [plugins]

@@ -47,10 +47,11 @@ repositories {
 dependencies {
     //KCQRS Modules
     implementation(kotlin("test"))
+    compileOnly(libs.bundles.log)
     implementation(libs.bundles.ksqrs.test)
 
     testImplementation(kotlin("test"))
-    testImplementation(libs.bundles.ksqrs.test.test)
+    testImplementation(libs.bundles.log.test)
 }
 
 jacoco {
