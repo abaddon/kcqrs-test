@@ -5,7 +5,7 @@ import io.github.abaddon.kcqrs.core.domain.messages.events.IDomainEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.entities.CounterAggregateId
 import java.util.*
 
-data class DomainErrorEvent private constructor(
+data class DomainErrorEvent(
     override val messageId: UUID,
     override val aggregateId: CounterAggregateId,
     override val version: Int = 1,

@@ -39,4 +39,8 @@ class IncreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
     }
 
     override fun streamNameRoot(): String = "IncreaseCounterTest"
+
+    override fun membersToIgnore(): List<String> {
+        return listOf("header")
+    }
 }
