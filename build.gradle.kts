@@ -11,22 +11,10 @@ object Meta {
     const val organizationUrl = "https://github.com/abaddon"
 }
 
-object Versions {
-    const val kcqrsCoreVersion = "0.0.11-SNAPSHOT"
-    const val kustomCompareVersion = "0.0.4"
-    const val log4j = "2.24.3"
-    const val kotlinVersion = "2.1.21"
-    const val kotlinCoroutineVersion = "1.10.2"
-    const val jacksonModuleKotlinVersion = "2.16.1"
-    const val junitJupiterVersion = "5.10.2"
-    const val jacocoToolVersion = "0.8.11"
-    const val jvmTarget = "21"
-}
-
 plugins {
-    kotlin("jvm") version "2.1.21"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.palantir.git-version") version "3.0.0"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.nexus.publish)
+    alias(libs.plugins.git.version)
     jacoco
     `maven-publish`
     signing
@@ -58,24 +46,15 @@ repositories {
 
 dependencies {
     //KCQRS Modules
-    implementation("io.github.abaddon.kcqrs:kcqrs-core:${Versions.kcqrsCoreVersion}")
-    implementation("io.github.abaddon:kustomCompare:${Versions.kustomCompareVersion}")
-
-    implementation("org.apache.logging.log4j:log4j-api:${Versions.log4j}")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlinVersion}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutineVersion}")
-    implementation("org.junit.jupiter:junit-jupiter:${Versions.junitJupiterVersion}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutineVersion}")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jacksonModuleKotlinVersion}")
-
     implementation(kotlin("test"))
+    implementation(libs.bundles.ksqrs.test)
+
     testImplementation(kotlin("test"))
-    testImplementation("org.apache.logging.log4j:log4j-core:${Versions.log4j}")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:${Versions.log4j}")
+    testImplementation(libs.bundles.ksqrs.test.test)
 }
 
 jacoco {
-    toolVersion = Versions.jacocoToolVersion
+    toolVersion = "0.8.10"
 }
 
 tasks.withType<Test> {
@@ -93,8 +72,8 @@ tasks.jacocoTestReport {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
-    compilerOptions.jvmTarget.set(JvmTarget.fromTarget(Versions.jvmTarget))
+kotlin {
+    jvmToolchain(21)
 }
 
 java {
