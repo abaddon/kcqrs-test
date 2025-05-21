@@ -9,18 +9,28 @@ import io.github.abaddon.kcqrs.core.domain.messages.events.IDomainEvent
 import io.github.abaddon.kcqrs.core.persistence.InMemoryEventStoreRepository
 import io.github.abaddon.kustomCompare.CompareLogic
 import io.github.abaddon.kustomCompare.config.CompareLogicConfig
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+
 abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    protected val testDispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
+
     abstract val aggregateId: IIdentity
-    open val eventRepository: InMemoryEventStoreRepository<TAggregate> = InMemoryEventStoreRepository<TAggregate>(
-        streamNameRoot(),
-        emptyAggregate()
-    )
+    protected lateinit var repository: InMemoryEventStoreForTestRepository<TAggregate>
+
     open val expectedException: Exception? = expectedException();
 
     abstract fun expectedException(): Exception?
@@ -59,20 +69,32 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
      * @return The AggregateCommandHandler used
      */
     open fun onCommandHandler(): IAggregateCommandHandler<TAggregate> =
-        SimpleAggregateCommandHandler<TAggregate>(eventRepository)
+        SimpleAggregateCommandHandler<TAggregate>(repository, testDispatcher)
+
+    @BeforeEach
+    fun setup() {
+        repository = InMemoryEventStoreForTestRepository<TAggregate>(
+            streamNameRoot(),
+            emptyAggregate(),
+            testDispatcher
+        )
+    }
+
+    @AfterEach
+    fun tearDown() {
+        repository.cleanup()
+    }
 
     @Test
-    fun checkBehaviour() {
+    fun checkBehaviour() = testScope.runTest {
         val givenEvents = given()
-        eventRepository.addEventsToStorage(aggregateId, givenEvents)
+        repository.addEventsToStorage(aggregateId, givenEvents)
         val handler = onCommandHandler()
 
         try {
-            runBlocking {
-                handler.handle(`when`())
-            }
+            handler.handle(`when`())
             val expected = expected()
-            val published = eventRepository.loadEventsFromStorage(aggregateId).minus(givenEvents)
+            val published = repository.loadEventsFromStorage(aggregateId).minus(givenEvents)
 
             compareEvents(expected, published, membersToIgnore())
 
@@ -94,7 +116,7 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
     }
 
     companion object {
-        fun compareEvents(expected: List<IDomainEvent>, published: List<IDomainEvent>,membersToIgnore: List<String>) {
+        fun compareEvents(expected: List<IDomainEvent>, published: List<IDomainEvent>, membersToIgnore: List<String>) {
             assertEquals(expected.count(), published.count(), "Different number of expected/published events.")
             val compareLogic = CompareLogic(
                 CompareLogicConfig()

@@ -12,6 +12,7 @@ import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterIncreasedEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterInitialisedEvent
 import java.util.*
 
+
 class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRoot>() {
 
     override val aggregateId = CounterAggregateId(UUID.randomUUID())
@@ -21,24 +22,24 @@ class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
 
     override fun given(): List<IDomainEvent> {
         return listOf(
-            CounterInitialisedEvent(aggregateId,initialValue),
-            CounterIncreasedEvent(aggregateId,incrementValue)
+            CounterInitialisedEvent(aggregateId, initialValue),
+            CounterIncreasedEvent(aggregateId, incrementValue)
         )
     }
 
     override fun `when`(): ICommand<CounterAggregateRoot> {
-        return DecreaseCounterCommand(aggregateId,decrementValue)
+        return DecreaseCounterCommand(aggregateId, decrementValue)
     }
 
     override fun expected(): List<IDomainEvent> {
-        return listOf(CounterDecreaseEvent(aggregateId,decrementValue))
+        return listOf(CounterDecreaseEvent(aggregateId, decrementValue))
     }
 
     override fun expectedException(): Exception? {
         return null
     }
 
-    override fun emptyAggregate(): (IIdentity) -> CounterAggregateRoot ={
+    override fun emptyAggregate(): (IIdentity) -> CounterAggregateRoot = {
         CounterAggregateRoot(it as CounterAggregateId)
     }
 
@@ -47,8 +48,6 @@ class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
     override fun membersToIgnore(): List<String> {
         return listOf("header")
     }
-
-
 
 
 }
