@@ -6,7 +6,7 @@
 kotlin = "2.1.20"
 kotlinxCoroutines = "1.10.2"
 
-kcqrs-core = "0.1.1"
+kcqrs-core = "0.1.2-SNAPSHOT"
 
 kustomCompare = "0.0.4"
 jacksonModuleKotlin = "2.16.1"
