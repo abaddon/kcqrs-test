@@ -34,7 +34,7 @@ class InMemoryEventStoreForTestRepository<TAggregate : IAggregate>(
      * This method should be used only for testing purpose.
      * It allows getting events directly from the Events store
      */
-    suspend fun loadEventsFromStorage(aggregateId: IIdentity): List<IDomainEvent> = withContext(coroutineContext) {
+    suspend fun loadEventsFromStorage(aggregateId: IIdentity): Result<List<IDomainEvent>> = withContext(coroutineContext) {
         load(aggregateIdStreamName(aggregateId))
     }
 
@@ -45,14 +45,17 @@ class InMemoryEventStoreForTestRepository<TAggregate : IAggregate>(
         header: Map<String, String>,
         currentVersion: Long
     ): Result<Unit> = withContext(coroutineContext) {
-        val currentEvents = storage.getOrDefault(streamName, listOf()).toMutableList()
-        currentEvents.addAll(uncommittedEvents.toMutableList())
-        storage[streamName] = currentEvents
-        Result.success(Unit)
+        runCatching {
+            val currentEvents = storage.getOrDefault(streamName, listOf()).toMutableList()
+            currentEvents.addAll(uncommittedEvents.toMutableList())
+            storage[streamName] = currentEvents
+        }
     }
 
-    override suspend fun load(streamName: String, startFrom: Long): List<IDomainEvent> = withContext(coroutineContext) {
-        storage.getOrDefault(streamName, listOf())
+    override suspend fun load(streamName: String, startFrom: Long): Result<List<IDomainEvent>> = withContext(coroutineContext) {
+        runCatching {
+            storage.getOrDefault(streamName, listOf())
+        }
     }
 
     override suspend fun <TProjection : IProjection> subscribe(projectionHandler: IProjectionHandler<TProjection>) {
@@ -61,15 +64,10 @@ class InMemoryEventStoreForTestRepository<TAggregate : IAggregate>(
 
     override fun emptyAggregate(aggregateId: IIdentity): TAggregate = _emptyAggregate(aggregateId)
 
-    override suspend fun publish(persistResult: Result<Unit>, events: List<IDomainEvent>): Result<Unit> =
+    override suspend fun publish(events: List<IDomainEvent>): Result<Unit> =
         withContext(coroutineContext) {
-            persistResult
-                .onSuccess {
-                    projectionHandlers.forEach { projectionHandlers -> projectionHandlers.onEvents(events) }
-                    Result.success(Unit)
-                }
-                .onFailure {
-                    persistResult
-                }
+            runCatching {
+                projectionHandlers.forEach { projectionHandlers -> projectionHandlers.onEvents(events) }
+            }
         }
 }
