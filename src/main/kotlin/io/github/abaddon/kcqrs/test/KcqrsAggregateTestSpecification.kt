@@ -74,7 +74,7 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
         repository = InMemoryEventStoreForTestRepository<TAggregate>(
             streamNameRoot(),
             emptyAggregate(),
-            testDispatcher
+            testScope.coroutineContext
         )
     }
 
@@ -102,29 +102,6 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
                 compareEvents(expected(), updatedAggregateResult.getOrThrow(), membersToIgnore())
             }
         }
-
-//        try {
-//
-//            val expected = expected()
-//            val published = repository.loadEventsFromStorage(aggregateId).minus(givenEvents)
-//
-//            compareEvents(expected, published, membersToIgnore())
-//
-//        } catch (e: Exception) {
-//            if (expectedException == null)
-//                assertTrue(false, "${e.javaClass.simpleName}: ${e.message}\n${e.stackTraceToString()} ")
-//            assertEquals(
-//                e.javaClass.simpleName,
-//                expectedException?.javaClass?.simpleName,
-//                "Exception type  ${e.javaClass.simpleName} differs from expected type ${expectedException?.javaClass?.simpleName}"
-//            )
-//            assertEquals(
-//                e.message,
-//                expectedException?.message,
-//                "Exception message  ${e.message} differs from expected type ${e.message}"
-//            )
-//        }
-
     }
 
     companion object {

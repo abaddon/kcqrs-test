@@ -1,21 +1,30 @@
 package io.github.abaddon.kcqrs.test
 
 import io.github.abaddon.kcqrs.core.domain.messages.events.IDomainEvent
+import io.github.abaddon.kcqrs.core.helpers.flatMap
 import io.github.abaddon.kcqrs.core.persistence.InMemoryProjectionRepository
 import io.github.abaddon.kcqrs.core.projections.IProjection
 import io.github.abaddon.kcqrs.core.projections.IProjectionHandler
 import io.github.abaddon.kcqrs.core.projections.IProjectionKey
 import io.github.abaddon.kcqrs.core.projections.SimpleProjectionHandler
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
 
-    private val eventRepository: MutableList<IDomainEvent> = mutableListOf()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    protected val testDispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
+    protected val testScope = TestScope(testDispatcher)
+
+    //private val eventRepository: MutableList<IDomainEvent> = mutableListOf()
     private val projectionRepository: InMemoryProjectionRepository<TProjection> =
-        InMemoryProjectionRepository<TProjection>(emptyProjection())
+        InMemoryProjectionRepository<TProjection>(testScope.coroutineContext, emptyProjection())
     private val expectedException: Exception? = expectedException();
 
     abstract val projectionKey: IProjectionKey
@@ -48,38 +57,44 @@ abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
      * @return The ProjectionHandler used
      */
     open fun onProjectionHandler(): IProjectionHandler<TProjection> =
-        SimpleProjectionHandler<TProjection>(projectionRepository, projectionKey)
+        SimpleProjectionHandler<TProjection>(projectionRepository, projectionKey, testScope.coroutineContext)
 
     @Test
-    fun checkBehaviour() {
+    fun checkBehaviour() = testScope.runTest {
         val projectionHandler = onProjectionHandler()
         //Apply the initial events
-        projectionHandler.onEvents(given())
-        //Apply the event to test
-        try {
-            projectionHandler.onEvent(`when`())
-
-            val expectedProjection = expected()
-
-            val actualProjection = runBlocking {
+        val result = projectionHandler.onEvents(given())
+            .flatMap {
+                projectionHandler.onEvent(`when`())
+            }.flatMap {
                 projectionRepository.getByKey(projectionKey)
+            }.flatMap { actualProjection ->
+                val expectedProjection = expected()
+                runCatching {
+                    compareProjection(expectedProjection, actualProjection)
+                }
             }
-
-            compareProjection(expectedProjection, actualProjection)
-
-        } catch (e: Exception) {
-            if (expectedException == null)
-                assertTrue(false, "${e.javaClass.simpleName}: ${e.message}\n${e.stackTraceToString()} ")
-            assertEquals(
-                e.javaClass.simpleName,
-                expectedException?.javaClass?.simpleName,
-                "Exception type  ${e.javaClass.simpleName} differs from expected type ${expectedException?.javaClass?.simpleName}"
-            )
-            assertEquals(
-                e.message,
-                expectedException?.message,
-                "Exception message  ${e.message} differs from expected type ${e.message}"
-            )
+        when {
+            result.isFailure -> {
+                val actualException = result.exceptionOrNull()!!
+                if (expectedException == null) {
+                    assertTrue(
+                        false,
+                        "${actualException.javaClass.simpleName}: ${actualException.message}\n${actualException.stackTraceToString()} "
+                    )
+                } else {
+                    assertEquals(
+                        actualException.javaClass.simpleName,
+                        expectedException?.javaClass?.simpleName,
+                        "Exception type  ${actualException.javaClass.simpleName} differs from expected type ${expectedException?.javaClass?.simpleName}"
+                    )
+                    assertEquals(
+                        actualException.message,
+                        expectedException?.message,
+                        "Exception message  ${actualException.message} differs from expected type ${actualException.message}"
+                    )
+                }
+            }
         }
     }
 
