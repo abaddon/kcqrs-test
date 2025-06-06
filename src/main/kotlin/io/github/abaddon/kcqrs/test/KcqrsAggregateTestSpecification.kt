@@ -67,14 +67,13 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
      * @return The AggregateCommandHandler used
      */
     open fun onCommandHandler(): IAggregateCommandHandler<TAggregate> =
-        SimpleAggregateCommandHandler<TAggregate>(repository, testScope.coroutineContext)
+        SimpleAggregateCommandHandler(repository)
 
     @BeforeEach
     fun setup() {
-        repository = InMemoryEventStoreForTestRepository<TAggregate>(
+        repository = InMemoryEventStoreForTestRepository(
             streamNameRoot(),
-            emptyAggregate(),
-            testScope.coroutineContext
+            emptyAggregate()
         )
     }
 

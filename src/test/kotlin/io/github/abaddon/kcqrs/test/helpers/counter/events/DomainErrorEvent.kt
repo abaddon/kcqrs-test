@@ -8,7 +8,7 @@ import java.util.*
 data class DomainErrorEvent(
     override val messageId: UUID,
     override val aggregateId: CounterAggregateId,
-    override val version: Int = 1,
+    override val version: Long = 1,
     override val aggregateType: String,
     override val header: EventHeader,
     val errorType: String,

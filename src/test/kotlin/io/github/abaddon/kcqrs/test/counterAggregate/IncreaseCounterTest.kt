@@ -18,7 +18,7 @@ class IncreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
 
     override fun given(): List<IDomainEvent> {
         return listOf(
-            CounterInitialisedEvent(aggregateId,initialValue),
+            CounterInitialisedEvent(aggregateId,initialValue,1),
         )
     }
 
@@ -27,7 +27,7 @@ class IncreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
     }
 
     override fun expected(): List<IDomainEvent> {
-        return listOf(CounterIncreasedEvent(aggregateId,incrementValue))
+        return listOf(CounterIncreasedEvent(aggregateId,incrementValue,2))
     }
 
     override fun expectedException(): Exception? {

@@ -10,13 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
 class InMemoryEventStoreForTestRepository<TAggregate : IAggregate>(
     private val _streamNameRoot: String,
     private val _emptyAggregate: (aggregateId: IIdentity) -> TAggregate,
-    coroutineContext: CoroutineContext
-) : EventStoreRepository<TAggregate>(coroutineContext) {
+) : EventStoreRepository<TAggregate>() {
 
     private val storage = mutableMapOf<String, MutableList<IDomainEvent>>()
     private val projectionHandlers = mutableListOf<IProjectionHandler<*>>()

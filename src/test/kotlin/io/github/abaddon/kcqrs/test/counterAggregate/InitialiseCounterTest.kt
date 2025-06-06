@@ -24,7 +24,7 @@ class InitialiseCounterTest: KcqrsAggregateTestSpecification<CounterAggregateRoo
     }
 
     override fun expected(): List<IDomainEvent> {
-        return listOf(CounterInitialisedEvent(aggregateId,initialValue))
+        return listOf(CounterInitialisedEvent(aggregateId,initialValue,1))
     }
 
     override fun expectedException(): Exception? {

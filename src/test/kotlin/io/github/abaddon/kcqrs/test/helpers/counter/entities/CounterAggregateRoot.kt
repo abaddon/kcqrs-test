@@ -22,7 +22,13 @@ data class CounterAggregateRoot(
             val emptyAggregate = CounterAggregateRoot(id)
             return try {
                 check(initialValue >= 0 && initialValue < Int.MAX_VALUE) { "Value $initialValue not valid, it has to be >= 0 and < ${Int.MAX_VALUE}" }
-                emptyAggregate.raiseEvent(CounterInitialisedEvent(id, initialValue)) as CounterAggregateRoot
+                emptyAggregate.raiseEvent(
+                    CounterInitialisedEvent(
+                        id,
+                        initialValue,
+                        1
+                    )
+                ) as CounterAggregateRoot
             } catch (e: Exception) {
                 emptyAggregate.raiseEvent(DomainErrorEvent(id, e)) as CounterAggregateRoot
             }
@@ -34,7 +40,7 @@ data class CounterAggregateRoot(
             check(incrementValue >= 0 && incrementValue < Int.MAX_VALUE) { "Value $incrementValue not valid, it has to be >= 0 and < ${Int.MAX_VALUE}" }
             val updatedCounter = counter + incrementValue
             check(updatedCounter < Int.MAX_VALUE) { "Aggregate value $updatedCounter is not valid, it has to be < ${Int.MAX_VALUE}" }
-            raiseEvent(CounterIncreasedEvent(id, incrementValue)) as CounterAggregateRoot
+            raiseEvent(CounterIncreasedEvent(id, incrementValue, version + 1)) as CounterAggregateRoot
         } catch (e: Exception) {
             raiseEvent(DomainErrorEvent(id, e)) as CounterAggregateRoot
         }
@@ -46,7 +52,7 @@ data class CounterAggregateRoot(
             val updatedCounter = counter - decrementValue
             check(updatedCounter >= 0) { "Aggregate value $updatedCounter is not valid, it has to be >= 0" }
 
-            raiseEvent(CounterDecreaseEvent(id, decrementValue)) as CounterAggregateRoot
+            raiseEvent(CounterDecreaseEvent(id, decrementValue, version + 1)) as CounterAggregateRoot
         } catch (e: Exception) {
             raiseEvent(DomainErrorEvent(id, e)) as CounterAggregateRoot
         }

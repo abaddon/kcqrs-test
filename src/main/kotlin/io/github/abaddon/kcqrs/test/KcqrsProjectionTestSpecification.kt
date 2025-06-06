@@ -22,9 +22,8 @@ abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
     protected val testDispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
     protected val testScope = TestScope(testDispatcher)
 
-    //private val eventRepository: MutableList<IDomainEvent> = mutableListOf()
     private val projectionRepository: InMemoryProjectionRepository<TProjection> =
-        InMemoryProjectionRepository<TProjection>(testScope.coroutineContext, emptyProjection())
+        InMemoryProjectionRepository(emptyProjection())
     private val expectedException: Exception? = expectedException();
 
     abstract val projectionKey: IProjectionKey
@@ -57,7 +56,7 @@ abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
      * @return The ProjectionHandler used
      */
     open fun onProjectionHandler(): IProjectionHandler<TProjection> =
-        SimpleProjectionHandler<TProjection>(projectionRepository, projectionKey, testScope.coroutineContext)
+        SimpleProjectionHandler(projectionRepository, projectionKey)
 
     @Test
     fun checkBehaviour() = testScope.runTest {
@@ -85,12 +84,12 @@ abstract class KcqrsProjectionTestSpecification<TProjection : IProjection> {
                 } else {
                     assertEquals(
                         actualException.javaClass.simpleName,
-                        expectedException?.javaClass?.simpleName,
-                        "Exception type  ${actualException.javaClass.simpleName} differs from expected type ${expectedException?.javaClass?.simpleName}"
+                        expectedException.javaClass.simpleName,
+                        "Exception type  ${actualException.javaClass.simpleName} differs from expected type ${expectedException.javaClass.simpleName}"
                     )
                     assertEquals(
                         actualException.message,
-                        expectedException?.message,
+                        expectedException.message,
                         "Exception message  ${actualException.message} differs from expected type ${actualException.message}"
                     )
                 }

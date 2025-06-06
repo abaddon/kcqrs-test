@@ -10,7 +10,7 @@ import io.github.abaddon.kcqrs.test.helpers.counter.entities.CounterAggregateRoo
 import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterDecreaseEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterIncreasedEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterInitialisedEvent
-import java.util.*
+import java.util.UUID
 
 
 class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRoot>() {
@@ -22,8 +22,8 @@ class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
 
     override fun given(): List<IDomainEvent> {
         return listOf(
-            CounterInitialisedEvent(aggregateId, initialValue),
-            CounterIncreasedEvent(aggregateId, incrementValue)
+            CounterInitialisedEvent(aggregateId, initialValue, 1),
+            CounterIncreasedEvent(aggregateId, incrementValue, 2)
         )
     }
 
@@ -32,7 +32,7 @@ class DecreaseCounterTest() : KcqrsAggregateTestSpecification<CounterAggregateRo
     }
 
     override fun expected(): List<IDomainEvent> {
-        return listOf(CounterDecreaseEvent(aggregateId, decrementValue))
+        return listOf(CounterDecreaseEvent(aggregateId, decrementValue, 3))
     }
 
     override fun expectedException(): Exception? {

@@ -18,7 +18,7 @@ class IncreaseCounterWrongTest() : KcqrsAggregateTestSpecification<CounterAggreg
 
     override fun given(): List<IDomainEvent> {
         return listOf(
-            CounterInitialisedEvent(aggregateId, initialValue),
+            CounterInitialisedEvent(aggregateId, initialValue,1),
         )
     }
 

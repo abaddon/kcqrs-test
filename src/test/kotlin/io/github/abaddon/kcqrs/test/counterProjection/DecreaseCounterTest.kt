@@ -8,7 +8,9 @@ import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterDecreaseEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.events.CounterInitialisedEvent
 import io.github.abaddon.kcqrs.test.helpers.counter.projection.CounterProjection
 import io.github.abaddon.kcqrs.test.helpers.counter.projection.CounterProjectionKey
-import java.util.*
+import java.time.Instant
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class DecreaseCounterTest() : KcqrsProjectionTestSpecification<CounterProjection>() {
 
@@ -16,26 +18,28 @@ class DecreaseCounterTest() : KcqrsProjectionTestSpecification<CounterProjection
     private val counterAggregateId = CounterAggregateId(UUID.randomUUID())
     private val initialValue = 5
     private val value = 2
+    private val now = Instant.now()
+    private val event = CounterDecreaseEvent(counterAggregateId, value, 2);
 
-//    private val emptyProjection: (key: IProjectionKey) -> CounterProjection = {
-//        key -> CounterProjection(key as CounterProjectionKey,0,0,0)
-//    }
-
-    override fun emptyProjection(): (key: IProjectionKey) -> CounterProjection = {
-            key -> CounterProjection(key as CounterProjectionKey,0,0,0)
+    override fun emptyProjection(): (key: IProjectionKey) -> CounterProjection = { key ->
+        CounterProjection(key as CounterProjectionKey, 0, 0, 0, now)
     }
 
     override fun given(): List<IDomainEvent> {
         return listOf(
-            CounterInitialisedEvent(counterAggregateId,initialValue),
+            CounterInitialisedEvent(counterAggregateId, initialValue,1)
         )
     }
 
     override fun `when`(): IDomainEvent {
-        return CounterDecreaseEvent(counterAggregateId,value)
+        return event
     }
+
     override fun expected(): CounterProjection {
-        return CounterProjection(projectionKey,1,0,1)
+        val lastProcessedEvent: ConcurrentHashMap<String, Long> = ConcurrentHashMap()
+        lastProcessedEvent[event.aggregateType] = event.version
+
+        return CounterProjection(projectionKey, 1, 0, 1, now, lastProcessedEvent)
     }
 
     override fun expectedException(): Exception? {
