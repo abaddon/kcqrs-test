@@ -16,7 +16,6 @@ class InitialiseCounterTest() : KcqrsProjectionTestSpecification<CounterProjecti
     override val projectionKey: CounterProjectionKey = CounterProjectionKey()
     private val counterAggregateId = CounterAggregateId(UUID.randomUUID())
     private val initialValue = 5
-    private val value = 2
     private val now = Instant.now()
     private val event = CounterInitialisedEvent(counterAggregateId, initialValue, 1)
 
