@@ -133,7 +133,6 @@ abstract class KcqrsAggregateTestSpecification<TAggregate : IAggregate>() {
             )
             val eventPairs = expected.zip(published) { e, p -> mapOf(Pair("expected", e), Pair("published", p)) }
             eventPairs.forEach { eventPair ->
-
                 val result = compareLogic.compare(eventPair["expected"]!!, eventPair["published"]!!)
                 assertTrue(
                     result.result(),
