@@ -19,9 +19,9 @@ data class CounterProjection(
 
     override fun applyEvent(event: IDomainEvent): CounterProjection {
         return when (event) {
-            is CounterDecreaseEvent -> this.copy(numCounterDecreaseEvent = +1)
-            is CounterIncreasedEvent -> this.copy(numCounterIncreasedEvent = +1)
-            is CounterInitialisedEvent -> this.copy(numCounterInitialisedEvent = +1)
+            is CounterDecreaseEvent -> this.copy(numCounterDecreaseEvent = numCounterDecreaseEvent + 1)
+            is CounterIncreasedEvent -> this.copy(numCounterIncreasedEvent = numCounterIncreasedEvent + 1)
+            is CounterInitialisedEvent -> this.copy(numCounterInitialisedEvent = numCounterInitialisedEvent + 1)
             else -> this
         }
     }
