@@ -6,7 +6,7 @@
 kotlin = "2.1.20"
 kotlinxCoroutines = "1.10.2"
 
-kcqrs-core = "0.2.4"
+kcqrs-core = "0.2.5-SNAPSHOT"
 
 kustomCompare = "0.0.4"
 jacksonModuleKotlin = "2.16.1"
@@ -16,7 +16,7 @@ nexus-publish-plugin = "2.0.0"
 git-version = "3.0.0"
 junit = "5.10.2"
 
-
+#
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }

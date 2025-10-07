@@ -59,10 +59,6 @@ class InMemoryEventStoreForTestRepository<TAggregate : IAggregate>(
         }
 
 
-    override suspend fun <TProjection : IProjection> subscribe(projectionHandler: IProjectionHandler<TProjection>) {
-        projectionHandlers.add(projectionHandler)
-    }
-
     override fun emptyAggregate(aggregateId: IIdentity): TAggregate = _emptyAggregate(aggregateId)
 
     override suspend fun publish(events: List<IDomainEvent>): Result<Unit> =
